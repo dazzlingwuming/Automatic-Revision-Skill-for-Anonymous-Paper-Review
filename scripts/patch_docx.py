@@ -46,11 +46,15 @@ def main() -> int:
     parser.add_argument("--input-docx", help="Original DOCX. When provided, suggestions are inserted into a copy.")
     parser.add_argument("--revision-plans-dir", required=True)
     parser.add_argument("--output", required=True)
+    parser.add_argument("--mode", choices=["suggestions", "apply"], default="suggestions")
     args = parser.parse_args()
     if args.input_docx:
-        from src.patching.docx_writer import patch_docx_with_revision_plans
+        from src.patching.docx_writer import apply_revision_plans_to_docx, patch_docx_with_revision_plans
 
-        patch_docx_with_revision_plans(Path(args.input_docx), Path(args.revision_plans_dir), Path(args.output))
+        if args.mode == "apply":
+            apply_revision_plans_to_docx(Path(args.input_docx), Path(args.revision_plans_dir), Path(args.output))
+        else:
+            patch_docx_with_revision_plans(Path(args.input_docx), Path(args.revision_plans_dir), Path(args.output))
     else:
         build_patch_docx(Path(args.revision_plans_dir), Path(args.output))
     return 0

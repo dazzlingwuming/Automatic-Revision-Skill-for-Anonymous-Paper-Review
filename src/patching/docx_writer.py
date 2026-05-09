@@ -36,6 +36,29 @@ def patch_docx_with_revision_plans(input_docx: Path, revision_plans_dir: Path, o
     document.save(output_path)
 
 
+def apply_revision_plans_to_docx(input_docx: Path, revision_plans_dir: Path, output_path: Path) -> None:
+    document = Document(input_docx)
+    for plan in load_revision_plans(revision_plans_dir):
+        for action in _plan_actions(plan):
+            if action.get("requires_author_input"):
+                continue
+            action_type = action.get("type", "")
+            new_text = action.get("new_text") or action.get("after_proposed_text") or ""
+            if not new_text.strip():
+                continue
+            anchor = action.get("anchor_text") or action.get("original_text") or action.get("before_excerpt") or ""
+            paragraph = _find_anchor_paragraph(document, anchor)
+            if paragraph is None:
+                continue
+            if action_type in {"replace_paragraph", "rewrite_sentence"}:
+                paragraph.clear()
+                paragraph.add_run(new_text)
+            elif action_type in {"insert_after_paragraph", "add", "rewrite"}:
+                _insert_paragraph_after(paragraph, new_text)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    document.save(output_path)
+
+
 def _plan_actions(plan: dict) -> list[dict]:
     if plan.get("actions"):
         return plan["actions"]

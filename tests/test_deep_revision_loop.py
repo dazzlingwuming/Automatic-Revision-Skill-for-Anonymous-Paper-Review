@@ -129,16 +129,47 @@ def test_deterministic_solution_auditor_rejects_scaffold_plan(tmp_path: Path) ->
     assert "确定性 scaffold 不能作为最终深度修改方案。" in audit["blockers"]
 
 
+def test_deterministic_solution_auditor_rejects_underdeveloped_final_plan(tmp_path: Path) -> None:
+    plan = deep_plan()
+    plan["problem_diagnosis"] = "评审认为解释不够充分，需要补充。"
+    plan["overall_strategy"] = "补充说明。"
+    plan["actions"][0]["new_text"] = "本文将进一步补充相关理论解释，并完善模型设定。"
+    plan["actions"][0]["rationale"] = "补充说明。"
+    plan["synchronized_updates"] = [
+        {
+            "target": {"section_id": "sec_5_1", "section_title": "总结"},
+            "new_text": "本文进一步完善模型解释。",
+            "reason": "保持一致。",
+        }
+    ]
+    plan["reviewer_response"] = "感谢专家意见。本文拟进一步补充相关说明。"
+    plans = tmp_path / "plans"
+    plans.mkdir()
+    (plans / "R1-C001.json").write_text(json.dumps(plan, ensure_ascii=False), encoding="utf-8")
+    output = tmp_path / "audit.json"
+
+    result = run_script("scripts/audit_revision_solutions.py", "--revision-plans-dir", str(plans), "--output", str(output))
+
+    assert result.returncode == 1
+    data = json.loads(output.read_text(encoding="utf-8"))
+    audit = data["audits"][0]
+    assert audit["decision"] == "revise"
+    assert "最终修改方案仍停留在简短建议层面。" in audit["blockers"]
+
+
 def test_deep_agents_and_skill_workflow_are_registered() -> None:
     planner = (ROOT / ".claude/agents/deep-revision-planner.md").read_text(encoding="utf-8")
     auditor = (ROOT / ".claude/agents/revision-solution-auditor.md").read_text(encoding="utf-8")
     skill = (ROOT / ".claude/skills/thesis-review-revision/SKILL.md").read_text(encoding="utf-8")
 
     assert "structured Markdown Revision Card" in planner
+    assert "complete manuscript revision" in planner
     assert "parse_revision_plan_markdown.py" in skill
     assert "revision_plan_notes" in skill
     assert "problem_diagnosis" in planner
     assert "synchronized_updates" in planner
+    assert "revision dossier" in planner
+    assert "reject advice-only" in auditor
     assert "overall_score" in auditor
     assert "retry_instruction" in auditor
     assert "deep-revision-planner" in skill

@@ -80,6 +80,17 @@ def report(args: argparse.Namespace) -> None:
             "--output",
             str(outputs_dir / "05_修改建议版.docx"),
         )
+        run_step(
+            "scripts/patch_docx.py",
+            "--input-docx",
+            args.paper_docx,
+            "--revision-plans-dir",
+            str(revision_plans),
+            "--output",
+            str(outputs_dir / "06_整合修改稿.docx"),
+            "--mode",
+            "apply",
+        )
 
 
 def main() -> int:

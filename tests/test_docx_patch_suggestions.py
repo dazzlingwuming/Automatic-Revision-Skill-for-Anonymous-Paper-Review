@@ -67,3 +67,70 @@ def test_patch_docx_inserts_highlighted_suggestions(tmp_path: Path) -> None:
     assert inserted.startswith("【建议新增 R1-C001/A1】")
     inserted_para = next(paragraph for paragraph in patched.paragraphs if "为回应盲审专家" in paragraph.text)
     assert inserted_para.runs[0].font.highlight_color == WD_COLOR_INDEX.YELLOW
+
+
+def test_patch_docx_apply_mode_rewrites_paragraph_and_skips_author_input(tmp_path: Path) -> None:
+    from docx import Document
+
+    input_docx = tmp_path / "paper.docx"
+    plans_dir = tmp_path / "plans"
+    output_docx = tmp_path / "outputs" / "整合修改稿.docx"
+    plans_dir.mkdir()
+
+    doc = Document()
+    doc.add_paragraph("本文介绍研究背景。")
+    doc.add_paragraph("实验结果将在作者补充后完善。")
+    doc.save(input_docx)
+
+    plan = {
+        "comment_id": "R1-C001",
+        "revision_status": "text_ready",
+        "overall_strategy": "补充研究背景。",
+        "actions": [
+            {
+                "action_id": "A1",
+                "type": "replace_paragraph",
+                "target": {"section_id": "sec_1", "section_title": "第一章 绪论"},
+                "anchor_text": "本文介绍研究背景。",
+                "original_text": "本文介绍研究背景。",
+                "new_text": "本文在研究背景部分进一步说明问题来源、现实约束、理论依据以及后续章节之间的逻辑衔接。",
+                "rationale": "回应背景不足。",
+                "requires_author_input": False,
+            },
+            {
+                "action_id": "A2",
+                "type": "replace_paragraph",
+                "target": {"section_id": "sec_4", "section_title": "实验分析"},
+                "anchor_text": "实验结果将在作者补充后完善。",
+                "original_text": "实验结果将在作者补充后完善。",
+                "new_text": "这里不能编造实验结果。",
+                "rationale": "需要真实数据。",
+                "requires_author_input": True,
+            },
+        ],
+        "reviewer_response": "感谢专家意见，本文拟补充研究背景说明。",
+        "author_input_needed": [{"item": "真实实验结果", "reason": "不能编造", "needed_material": "新增实验数据"}],
+        "risks": [],
+        "confidence": 0.9,
+    }
+    (plans_dir / "R1-C001.json").write_text(json.dumps(plan, ensure_ascii=False), encoding="utf-8")
+
+    result = run_script(
+        "scripts/patch_docx.py",
+        "--input-docx",
+        str(input_docx),
+        "--revision-plans-dir",
+        str(plans_dir),
+        "--output",
+        str(output_docx),
+        "--mode",
+        "apply",
+    )
+    assert result.returncode == 0, result.stderr + result.stdout
+
+    patched = Document(output_docx)
+    texts = [paragraph.text for paragraph in patched.paragraphs]
+    assert "本文介绍研究背景。" not in texts
+    assert any("进一步说明问题来源" in text for text in texts)
+    assert "这里不能编造实验结果。" not in texts
+    assert any("实验结果将在作者补充后完善。" in text for text in texts)

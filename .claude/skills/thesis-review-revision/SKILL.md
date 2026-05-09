@@ -1,6 +1,6 @@
 ---
 name: thesis-review-revision
-description: Process thesis or dissertation blind-review comments. Use when the user provides a thesis manuscript and blind-review comments, and wants structured revision suggestions, reviewer response tables, or revision reports.
+description: Process thesis or dissertation blind-review comments. Use when the user provides a DOCX manuscript and blind-review comments, and wants detailed analysis, manuscript-ready revisions, reviewer responses, or final DOCX outputs.
 disable-model-invocation: true
 allowed-tools: Read, Write, Edit, Bash(python *), Bash(pytest *), Agent(review-parser), Agent(paper-indexer), Agent(comment-mapper), Agent(revision-planner), Agent(deep-revision-planner), Agent(revision-solution-auditor), Agent(quality-auditor), Agent(response-writer)
 ---
@@ -48,7 +48,7 @@ Expected user inputs:
 12. If `revision-solution-auditor` returns `decision: revise`, retry only that `deep-revision-planner` task with `retry_instruction`; allow up to 3 attempts.
 13. After every retry, parse Markdown to JSON and run `scripts/validate_agent_json.py` again before re-auditing.
 14. If still not passing, mark the plan as `needs_author_input` or `manual_review` with exact reasons.
-15. Use `quality-auditor` and deterministic `scripts/audit_revision_solutions.py` to detect hallucinations, unsupported claims, missing evidence, shallow advice, and over-promising.
+15. Use `quality-auditor` and deterministic `scripts/audit_revision_solutions.py` to detect hallucinations, unsupported claims, missing evidence, shallow advice, underdeveloped final edits, and over-promising.
 16. Use `scripts/run_pipeline.py --mode report` or equivalent scripts to render final reports and DOCX outputs.
 17. Return a concise summary and list all generated files.
 
@@ -96,14 +96,19 @@ Expected user inputs:
 ## Deep Revision v3.3 Rules
 
 1. Shallow advice is a failed output. A plan must be a full Revision Card.
-2. Every substantive plan must include `problem_diagnosis`, `evidence_coverage`, concrete `actions`, `synchronized_updates`, and `reviewer_response`.
-3. A broad conceptual issue must consider multiple affected locations, such as method section plus conclusion/innovation/abstract.
-4. Experiment issues must use existing manuscript evidence when available. If new results are required, provide experiment design and result-table templates, but do not invent results.
-5. Reference issues must list fields to verify and replacement format, but do not invent publication details.
-6. Figure/table issues must include matched assets, diagnosis, introduction/caption text, and redraw or formatting spec.
-7. `revision-solution-auditor` must judge each plan before final report generation.
-8. Failed plans must be retried with the auditor's `retry_instruction` up to 3 times.
-9. Final reports must clearly distinguish proposed revisions, completed applied changes, and author-required materials.
+2. The expected deliverable is a near-final revision package. Do not stop at a few consultation paragraphs.
+3. Every substantive plan must include `problem_diagnosis`, `evidence_coverage`, concrete `actions`, `synchronized_updates`, and `reviewer_response`.
+4. Each text-level action must provide manuscript-ready replacement/addition text, not "建议补充/进一步完善" style instructions.
+5. For major theory, model, experiment, conclusion, or contribution issues, split the solution into multiple actions across all affected sections.
+6. If a new experiment is needed, provide protocol, variables, comparison groups, result table template, narrative placeholders, and exact author inputs. Do not invent numeric results.
+7. The auditor must reject advice-only output and any plan that cannot materially improve the manuscript after direct integration.
+8. A broad conceptual issue must consider multiple affected locations, such as method section plus conclusion/innovation/abstract.
+9. Experiment issues must use existing manuscript evidence when available. If new results are required, provide experiment design and result-table templates, but do not invent results.
+10. Reference issues must list fields to verify and replacement format, but do not invent publication details.
+11. Figure/table issues must include matched assets, diagnosis, introduction/caption text, and redraw or formatting spec.
+12. `revision-solution-auditor` must judge each plan before final report generation.
+13. Failed plans must be retried with the auditor's `retry_instruction` up to 3 times.
+14. Final reports must clearly distinguish proposed revisions, completed applied changes, and author-required materials.
 
 ## JSON Validation and Repair Rules
 
@@ -125,6 +130,7 @@ At minimum produce:
 - `outputs/盲审回应表.md`
 - `outputs/作者待补充事项.md`
 - `outputs/05_修改建议版.docx`
+- `outputs/06_整合修改稿.docx`
 
 When possible also produce:
 
