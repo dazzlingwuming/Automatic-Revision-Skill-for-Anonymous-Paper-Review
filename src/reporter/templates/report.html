@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>盲审论文修改报告</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "Microsoft YaHei", "SimSun", serif; max-width: 960px; margin: 0 auto; padding: 30px 20px; color: #333; line-height: 1.8; }
+  h1 { color: #1a5276; border-bottom: 3px solid #1a5276; padding-bottom: 12px; margin-bottom: 20px; font-size: 24px; }
+  h2 { color: #2c3e50; margin-top: 35px; margin-bottom: 15px; font-size: 20px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+  h3 { color: #34495e; background: #f8f9fa; padding: 8px 15px; border-left: 4px solid #3498db; margin: 20px 0 10px 0; font-size: 16px; }
+  .meta { color: #666; font-size: 14px; margin-bottom: 25px; line-height: 2; }
+  .meta p { margin: 2px 0; }
+  .comment { background: #fef9e7; padding: 12px 16px; border-left: 4px solid #f39c12; margin: 10px 0; border-radius: 0 4px 4px 0; }
+  .suggestion { background: #eaf2f8; padding: 12px 16px; border-left: 4px solid #2980b9; margin: 10px 0; white-space: pre-wrap; border-radius: 0 4px 4px 0; }
+  .tag { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; margin: 2px 4px; font-weight: normal; }
+  .tag-required { background: #fadbd8; color: #c0392b; }
+  .tag-suggested { background: #fdebd0; color: #e67e22; }
+  .tag-optional { background: #d5f5e3; color: #27ae60; }
+  .tag-category { background: #e8daef; color: #7d3c98; }
+  table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+  th, td { border: 1px solid #ddd; padding: 10px 14px; text-align: left; }
+  th { background: #f2f3f4; font-weight: bold; }
+  tr:nth-child(even) { background: #fafafa; }
+  .summary { background: #f0f3f5; padding: 18px; border-radius: 6px; margin: 20px 0; line-height: 2; }
+  hr { border: none; border-top: 1px solid #eee; margin: 15px 0; }
+  .stats { display: flex; gap: 15px; margin: 15px 0; flex-wrap: wrap; }
+  .stat-card { background: #f8f9fa; padding: 12px 20px; border-radius: 6px; text-align: center; min-width: 100px; }
+  .stat-card .num { font-size: 28px; font-weight: bold; color: #1a5276; }
+  .stat-card .label { font-size: 13px; color: #666; margin-top: 4px; }
+</style>
+</head>
+<body>
+<h1>盲审论文修改报告</h1>
+<div class="meta">
+  <p><strong>论文题目：</strong>{{ report.paper_info.title or '未知' }}</p>
+  <p><strong>生成时间：</strong>{{ generated_at }}</p>
+</div>
+<hr>
+
+<h2>一、盲审意见总览</h2>
+{% set categories = {} %}
+{% for c in report.comments %}
+  {% set _ = categories.update({c.category.value: categories.get(c.category.value, 0) + 1}) %}
+{% endfor %}
+<div class="stats">
+  <div class="stat-card"><div class="num">{{ report.comments|length }}</div><div class="label">意见总数</div></div>
+  {% for cat, count in categories.items() %}
+  <div class="stat-card"><div class="num">{{ count }}</div><div class="label">{{ cat }}</div></div>
+  {% endfor %}
+</div>
+
+<h2>二、逐条修改建议</h2>
+{% for comment, suggestion in zip(report.comments, report.suggestions) %}
+<h3>{{ comment.id }}</h3>
+<div class="comment"><strong>评审意见：</strong>{{ comment.original_text }}</div>
+<p>
+  <span class="tag tag-{{ 'required' if '必须' in comment.severity.value else 'suggested' if '建议' in comment.severity.value else 'optional' }}">{{ comment.severity.value }}</span>
+  <span class="tag tag-category">{{ comment.category.value }}</span>
+</p>
+<div class="suggestion"><strong>修改建议：</strong><br>{{ suggestion.suggestion }}</div>
+{% if not loop.last %}<hr>{% endif %}
+{% endfor %}
+
+{% if report.format_issues %}
+<h2>三、格式问题清单</h2>
+<table>
+  <thead><tr><th>问题类型</th><th>描述</th><th>位置</th><th>修改建议</th></tr></thead>
+  <tbody>
+  {% for issue in report.format_issues %}
+  <tr>
+    <td><strong>{{ issue.issue_type }}</strong></td>
+    <td>{{ issue.description }}</td>
+    <td>{{ issue.location }}</td>
+    <td>{{ issue.suggestion }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+{% if report.summary %}
+<h2>四、修改总结</h2>
+<div class="summary">{{ report.summary }}</div>
+{% endif %}
+</body>
+</html>

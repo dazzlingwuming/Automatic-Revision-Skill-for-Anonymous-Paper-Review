@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SectionSummaries",
+  "type": "object",
+  "required": ["sections"],
+  "properties": {
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["section_id", "title", "level", "page_range", "summary_short", "summary_detailed", "key_claims", "key_terms", "related_assets", "potential_review_topics"],
+        "properties": {
+          "section_id": { "type": "string" },
+          "title": { "type": "string" },
+          "level": { "type": "integer", "minimum": 1 },
+          "page_range": { "type": ["string", "null"] },
+          "summary_short": { "type": "string" },
+          "summary_detailed": { "type": "string" },
+          "key_claims": { "type": "array", "items": { "type": "string" } },
+          "key_terms": { "type": "array", "items": { "type": "string" } },
+          "related_assets": { "type": "array", "items": { "type": "string" } },
+          "potential_review_topics": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
+

@@ -1,0 +1,33 @@
+{
+  "mappings": [
+    {
+      "comment_id": "R1-C001",
+      "mapping_type": "multi_section",
+      "locations": [
+        {
+          "role": "core_revision_location",
+          "section_id": "sec_1",
+          "title": "第一章 绪论",
+          "page_range": "1-8",
+          "reason": "创新贡献通常需要在绪论中集中回应。",
+          "include_mode": "full_text",
+          "confidence": 0.82
+        },
+        {
+          "role": "consistency_update_location",
+          "section_id": "sec_5",
+          "title": "第五章 总结与展望",
+          "page_range": "75-76",
+          "reason": "结论中需要同步强化贡献表述。",
+          "include_mode": "summary_plus_target_paragraphs",
+          "confidence": 0.72
+        }
+      ],
+      "assets": [],
+      "requires_author_input": false,
+      "confidence": 0.8,
+      "needs_human_location_check": false,
+      "notes": "v3.1 示例映射。"
+    }
+  ]
+}

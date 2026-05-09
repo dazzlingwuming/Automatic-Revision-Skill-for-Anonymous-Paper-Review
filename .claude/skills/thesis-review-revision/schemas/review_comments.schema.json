@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ReviewComments",
+  "type": "object",
+  "required": ["comments"],
+  "properties": {
+    "comments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "comment_id",
+          "reviewer_id",
+          "original_text",
+          "normalized_text",
+          "category",
+          "severity",
+          "scope",
+          "action_type",
+          "requires_author_input",
+          "confidence"
+        ],
+        "properties": {
+          "comment_id": { "type": "string", "minLength": 1 },
+          "reviewer_id": { "type": "string", "minLength": 1 },
+          "original_text": { "type": "string", "minLength": 1 },
+          "normalized_text": { "type": "string", "minLength": 1 },
+          "category": {
+            "type": "string",
+            "enum": ["理论基础", "文献综述", "创新贡献", "研究问题", "方法设计", "数据实验", "结果分析", "讨论解释", "结构逻辑", "语言表达", "格式规范", "参考文献", "学术规范", "其他"]
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["必须修改", "重点修改", "建议修改", "可解释回应", "不确定"]
+          },
+          "scope": {
+            "type": "string",
+            "enum": ["全文", "章节", "小节", "段落", "图表", "参考文献", "摘要", "结论", "不确定"]
+          },
+          "action_type": {
+            "type": "string",
+            "enum": ["新增", "删除", "重写", "补充解释", "补充实验", "补充引用", "调整结构", "格式修正", "需要作者确认", "其他"]
+          },
+          "requires_author_input": { "type": "boolean" },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "notes": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
+

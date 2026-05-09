@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PaperIndex",
+  "type": "object",
+  "required": ["metadata", "outline", "chunks", "figures", "tables", "references"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["title", "author", "degree_type", "language"],
+      "properties": {
+        "title": { "type": ["string", "null"] },
+        "author": { "type": ["string", "null"] },
+        "degree_type": { "type": "string", "enum": ["硕士", "博士", "unknown"] },
+        "language": { "type": "string", "enum": ["zh", "en", "mixed", "unknown"] }
+      },
+      "additionalProperties": false
+    },
+    "outline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["level", "heading", "page_start", "page_end"],
+        "properties": {
+          "level": { "type": "integer", "minimum": 1 },
+          "heading": { "type": "string" },
+          "page_start": { "type": ["integer", "null"], "minimum": 1 },
+          "page_end": { "type": ["integer", "null"], "minimum": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "chunks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["chunk_id", "chapter", "section", "heading_path", "page_start", "page_end", "summary", "keywords", "text_ref"],
+        "properties": {
+          "chunk_id": { "type": "string" },
+          "chapter": { "type": ["string", "null"] },
+          "section": { "type": ["string", "null"] },
+          "heading_path": { "type": "array", "items": { "type": "string" } },
+          "page_start": { "type": ["integer", "null"], "minimum": 1 },
+          "page_end": { "type": ["integer", "null"], "minimum": 1 },
+          "summary": { "type": "string" },
+          "keywords": { "type": "array", "items": { "type": "string" } },
+          "text_ref": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "figures": { "type": "array", "items": { "$ref": "#/$defs/numberedItem" } },
+    "tables": { "type": "array", "items": { "$ref": "#/$defs/numberedItem" } },
+    "references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["ref_id", "text"],
+        "properties": {
+          "ref_id": { "type": "string" },
+          "text": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "$defs": {
+    "numberedItem": {
+      "type": "object",
+      "required": ["id", "caption", "page", "chunk_id"],
+      "properties": {
+        "id": { "type": "string" },
+        "caption": { "type": "string" },
+        "page": { "type": ["integer", "null"], "minimum": 1 },
+        "chunk_id": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
+

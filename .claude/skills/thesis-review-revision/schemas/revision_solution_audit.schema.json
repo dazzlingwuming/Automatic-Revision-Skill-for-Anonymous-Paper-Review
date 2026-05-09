@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RevisionSolutionAudit",
+  "type": "object",
+  "required": ["comment_id", "passed", "overall_score", "decision", "rubric", "blockers", "required_fixes", "retry_instruction"],
+  "properties": {
+    "comment_id": { "type": "string" },
+    "passed": { "type": "boolean" },
+    "overall_score": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "decision": { "type": "string", "enum": ["pass", "revise", "needs_author_input", "manual_review"] },
+    "rubric": {
+      "type": "object",
+      "required": ["addresses_comment", "uses_paper_evidence", "actionability", "multi_location_coverage", "integrity", "reviewer_response"],
+      "properties": {
+        "addresses_comment": { "$ref": "#/$defs/rubric_item" },
+        "uses_paper_evidence": { "$ref": "#/$defs/rubric_item" },
+        "actionability": { "$ref": "#/$defs/rubric_item" },
+        "multi_location_coverage": { "$ref": "#/$defs/rubric_item" },
+        "integrity": { "$ref": "#/$defs/rubric_item" },
+        "reviewer_response": { "$ref": "#/$defs/rubric_item" }
+      },
+      "additionalProperties": false
+    },
+    "blockers": { "type": "array", "items": { "type": "string" } },
+    "required_fixes": { "type": "array", "items": { "type": "string" } },
+    "retry_instruction": { "type": "string" }
+  },
+  "$defs": {
+    "rubric_item": {
+      "type": "object",
+      "required": ["score", "max_score", "issues"],
+      "properties": {
+        "score": { "type": "integer", "minimum": 0 },
+        "max_score": { "type": "integer", "minimum": 1 },
+        "issues": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

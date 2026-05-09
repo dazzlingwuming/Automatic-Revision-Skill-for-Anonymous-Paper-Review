@@ -1,0 +1,18 @@
+{
+  "comments": [
+    {
+      "comment_id": "R1-C001",
+      "reviewer_id": "R1",
+      "original_text": "论文对研究创新点的归纳不够突出，建议进一步凝练本文贡献。",
+      "normalized_text": "需要突出并凝练论文创新贡献。",
+      "category": "创新贡献",
+      "severity": "重点修改",
+      "scope": "全文",
+      "action_type": "补充解释",
+      "requires_author_input": false,
+      "confidence": 0.9,
+      "notes": "测试数据。"
+    }
+  ]
+}
+

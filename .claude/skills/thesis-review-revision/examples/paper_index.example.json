@@ -1,0 +1,38 @@
+{
+  "metadata": {
+    "title": "示例论文题目",
+    "author": null,
+    "degree_type": "硕士",
+    "language": "zh"
+  },
+  "outline": [
+    {
+      "level": 1,
+      "heading": "第一章 绪论",
+      "page_start": 1,
+      "page_end": 8
+    }
+  ],
+  "chunks": [
+    {
+      "chunk_id": "ch_0001",
+      "chapter": "第一章",
+      "section": "1.1 研究背景",
+      "heading_path": ["第一章 绪论", "1.1 研究背景"],
+      "page_start": 1,
+      "page_end": 2,
+      "summary": "介绍研究背景和意义。",
+      "keywords": ["研究背景", "研究意义"],
+      "text_ref": "workdir/test/chunks/ch_0001.txt"
+    }
+  ],
+  "figures": [],
+  "tables": [],
+  "references": [
+    {
+      "ref_id": "ref_001",
+      "text": "[1] 示例参考文献。"
+    }
+  ]
+}
+

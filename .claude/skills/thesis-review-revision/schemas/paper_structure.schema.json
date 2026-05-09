@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PaperStructure",
+  "type": "object",
+  "required": ["paper_title", "total_pages", "sections"],
+  "properties": {
+    "paper_title": { "type": ["string", "null"] },
+    "total_pages": { "type": ["integer", "null"], "minimum": 0 },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["section_id", "level", "title", "page_start", "page_end", "parent", "children", "blocks", "figures", "tables", "formulas"],
+        "properties": {
+          "section_id": { "type": "string" },
+          "level": { "type": "integer", "minimum": 1 },
+          "title": { "type": "string" },
+          "page_start": { "type": ["integer", "null"], "minimum": 1 },
+          "page_end": { "type": ["integer", "null"], "minimum": 1 },
+          "parent": { "type": ["string", "null"] },
+          "children": { "type": "array", "items": { "type": "string" } },
+          "blocks": { "type": "array", "items": { "type": "string" } },
+          "figures": { "type": "array", "items": { "type": "string" } },
+          "tables": { "type": "array", "items": { "type": "string" } },
+          "formulas": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
+

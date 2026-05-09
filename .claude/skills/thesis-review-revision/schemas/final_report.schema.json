@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FinalReport",
+  "type": "object",
+  "required": ["metadata", "comment_count", "outputs", "author_input_items", "notes"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["paper_file", "review_file", "generated_at", "mode"],
+      "properties": {
+        "paper_file": { "type": "string" },
+        "review_file": { "type": "string" },
+        "generated_at": { "type": "string" },
+        "mode": { "type": "string", "enum": ["suggest_only", "applied_changes", "format_only"] }
+      },
+      "additionalProperties": false
+    },
+    "comment_count": { "type": "integer", "minimum": 0 },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind", "path"],
+        "properties": {
+          "kind": { "type": "string" },
+          "path": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "author_input_items": { "type": "array", "items": { "type": "string" } },
+    "notes": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}
+

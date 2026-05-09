@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RevisionPlanV31",
+  "type": "object",
+    "required": ["comment_id", "revision_status", "overall_strategy", "actions", "reviewer_response", "author_input_needed", "risks", "confidence"],
+    "properties": {
+      "comment_id": { "type": "string" },
+      "problem_diagnosis": { "type": "string" },
+      "evidence_coverage": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["role", "section_id", "section_title", "evidence", "use"],
+          "properties": {
+            "role": { "type": "string" },
+            "section_id": { "type": ["string", "null"] },
+            "section_title": { "type": ["string", "null"] },
+            "evidence": { "type": "string" },
+            "use": { "type": "string" },
+            "asset_id": { "type": ["string", "null"] }
+          },
+          "additionalProperties": false
+        }
+      },
+    "revision_status": {
+      "type": "string",
+      "enum": ["text_ready", "text_ready_with_caveat", "needs_author_input", "visual_redraw_needed", "format_fix_ready", "explain_only", "not_applicable"]
+    },
+    "overall_strategy": { "type": "string" },
+    "actions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["action_id", "type", "target", "anchor_text", "original_text", "new_text", "rationale", "requires_author_input"],
+        "properties": {
+          "action_id": { "type": "string" },
+          "type": {
+            "type": "string",
+            "enum": ["insert_after_paragraph", "insert_before_asset", "replace_paragraph", "rewrite_sentence", "move_asset", "redraw_figure", "fix_format", "add_experiment_design", "add_reference_checklist", "explain_only"]
+          },
+          "target": {
+            "type": "object",
+            "required": ["section_id", "section_title", "page_range"],
+            "properties": {
+              "section_id": { "type": ["string", "null"] },
+              "section_title": { "type": ["string", "null"] },
+              "page_range": { "type": ["string", "null"] },
+              "asset_id": { "type": ["string", "null"] }
+            },
+            "additionalProperties": false
+          },
+          "anchor_text": { "type": "string" },
+          "original_text": { "type": "string" },
+          "new_text": { "type": "string" },
+          "rationale": { "type": "string" },
+          "requires_author_input": { "type": "boolean" },
+          "visual_diagnosis": { "type": "array", "items": { "type": "string" } },
+          "redraw_spec": { "type": ["object", "null"] },
+          "caption_suggestion": { "type": ["string", "null"] },
+          "author_input_reason": { "type": ["string", "null"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "reviewer_response": { "type": "string" },
+      "author_input_needed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["item", "reason", "needed_material"],
+        "properties": {
+          "item": { "type": "string" },
+          "reason": { "type": "string" },
+          "needed_material": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+      },
+      "synchronized_updates": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["target", "new_text", "reason"],
+          "properties": {
+            "target": {
+              "type": "object",
+              "required": ["section_id", "section_title"],
+              "properties": {
+                "section_id": { "type": ["string", "null"] },
+                "section_title": { "type": ["string", "null"] },
+                "asset_id": { "type": ["string", "null"] }
+              },
+              "additionalProperties": false
+            },
+            "new_text": { "type": "string" },
+            "reason": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "risks": { "type": "array", "items": { "type": "string" } },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+  },
+  "additionalProperties": false
+}

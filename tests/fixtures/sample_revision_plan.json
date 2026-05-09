@@ -1,0 +1,26 @@
+{
+  "comment_id": "R1-C001",
+  "revision_status": "can_revise",
+  "review_comment_original": "论文对研究创新点的归纳不够突出，建议进一步凝练本文贡献。",
+  "revision_strategy": "补充贡献概括，并在结论中呼应。",
+  "specific_actions": [
+    {
+      "action_id": "A1",
+      "type": "add",
+      "location": {
+        "section": "第一章 绪论",
+        "page_range": "1-2",
+        "chunk_id": "ch_0001"
+      },
+      "before_excerpt": "本文贡献需要进一步凝练。",
+      "after_proposed_text": "本文拟从研究对象、方法路径和应用价值三个方面进一步凝练贡献。",
+      "rationale": "回应创新贡献不够突出的问题。",
+      "evidence_limitations": []
+    }
+  ],
+  "response_to_reviewer": "感谢专家意见。本文拟在绪论部分进一步凝练研究贡献。",
+  "author_input_needed": [],
+  "risks": [],
+  "confidence": 0.82
+}
+

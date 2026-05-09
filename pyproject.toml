@@ -1,0 +1,10 @@
+[project]
+name = "thesis-blind-review-revision"
+version = "0.1.0"
+description = "Claude Code Skill for thesis blind-review revision planning"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+

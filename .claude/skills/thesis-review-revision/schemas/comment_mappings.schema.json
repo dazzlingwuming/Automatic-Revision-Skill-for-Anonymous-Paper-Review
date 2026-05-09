@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CommentMappingsV31",
+  "type": "object",
+  "required": ["mappings"],
+  "properties": {
+    "mappings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["comment_id", "mapping_type", "locations", "assets", "requires_author_input", "confidence"],
+        "properties": {
+          "comment_id": { "type": "string" },
+          "mapping_type": { "type": "string", "enum": ["single_section", "multi_section", "visual_table", "references", "formatting", "uncertain"] },
+          "locations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["role", "section_id", "title", "page_range", "reason", "include_mode", "confidence"],
+              "properties": {
+                "role": { "type": "string", "enum": ["core_revision_location", "supporting_context", "consistency_update_location", "visual_or_table_asset", "author_input_location"] },
+                "section_id": { "type": ["string", "null"] },
+                "title": { "type": ["string", "null"] },
+                "page_range": { "type": ["string", "null"] },
+                "reason": { "type": "string" },
+                "include_mode": { "type": "string", "enum": ["full_text", "summary_plus_target_paragraphs", "summary_only", "asset_only"] },
+                "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+              },
+              "additionalProperties": false
+            }
+          },
+          "assets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["asset_id", "role", "reason"],
+              "properties": {
+                "asset_id": { "type": "string" },
+                "role": { "type": "string", "enum": ["core_asset", "supporting_asset", "manual_check_asset"] },
+                "reason": { "type": "string" }
+              },
+              "additionalProperties": false
+            }
+          },
+          "requires_author_input": { "type": "boolean" },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "needs_human_location_check": { "type": "boolean" },
+          "notes": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
+

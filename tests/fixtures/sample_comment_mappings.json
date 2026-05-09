@@ -1,0 +1,22 @@
+{
+  "mappings": [
+    {
+      "comment_id": "R1-C001",
+      "mapping_type": "global",
+      "primary_locations": [
+        {
+          "section": "第一章 绪论",
+          "page_range": "1-2",
+          "chunk_ids": ["ch_0001"],
+          "reason": "该意见要求凝练全文贡献。"
+        }
+      ],
+      "secondary_locations": [],
+      "missing_context": [],
+      "requires_author_input": false,
+      "confidence": 0.85,
+      "notes": "测试数据。"
+    }
+  ]
+}
+

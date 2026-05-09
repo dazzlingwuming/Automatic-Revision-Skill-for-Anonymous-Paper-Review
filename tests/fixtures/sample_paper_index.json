@@ -1,0 +1,56 @@
+{
+  "metadata": {
+    "title": "示例论文",
+    "author": null,
+    "degree_type": "硕士",
+    "language": "zh"
+  },
+  "outline": [
+    {
+      "level": 1,
+      "heading": "摘要",
+      "page_start": 1,
+      "page_end": 1
+    },
+    {
+      "level": 1,
+      "heading": "关键词",
+      "page_start": 1,
+      "page_end": 1
+    },
+    {
+      "level": 1,
+      "heading": "目录",
+      "page_start": 1,
+      "page_end": 1
+    },
+    {
+      "level": 1,
+      "heading": "参考文献",
+      "page_start": 5,
+      "page_end": 5
+    }
+  ],
+  "chunks": [
+    {
+      "chunk_id": "ch_0001",
+      "chapter": "第一章",
+      "section": "第一章 绪论",
+      "heading_path": ["第一章 绪论"],
+      "page_start": 1,
+      "page_end": 2,
+      "summary": "绪论部分介绍背景和贡献。",
+      "keywords": ["绪论", "贡献"],
+      "text_ref": "tests/fixtures/sample_chunk.txt"
+    }
+  ],
+  "figures": [],
+  "tables": [],
+  "references": [
+    {
+      "ref_id": "ref_001",
+      "text": "[1] 示例作者. 示例文献."
+    }
+  ]
+}
+
