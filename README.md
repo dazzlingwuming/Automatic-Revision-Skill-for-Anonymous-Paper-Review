@@ -304,19 +304,7 @@ python -m pytest -q
 
 - PDF-only 模式质量较低，推荐始终提供 DOCX。
 - DOCX 本身没有可靠页码信息；如需精确页码，需要额外提供排版一致的 PDF 做对照。
-- `05_修改建议版.docx` 是高亮建议版，不是 Word 修订模式 tracked changes。
-- `06_整合修改稿.docx` 是自动整合副本，只会写入无需作者补真实材料的修改。
+- `修改建议版.docx` 是高亮建议版，不是 Word 修订模式 tracked changes。
+- `整合修改稿.docx` 是自动整合副本，只会写入无需作者补真实材料的修改。
 - `full` 当前主要是确定性流程；最终质量依赖宿主 Agent 调度深度 planner/auditor 闭环。
 
-## 12. 不会上传的本地内容
-
-`.gitignore` 默认排除了：
-
-- `workdir/`
-- `output/`
-- `例子/`
-- `.idea/`
-- `.pytest_cache/`
-- `.claude/settings.local.json`
-
-因此真实论文、盲审文件、运行产物和本地配置不会进入公开仓库。
