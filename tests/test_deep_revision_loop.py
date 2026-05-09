@@ -109,6 +109,26 @@ def test_deterministic_solution_auditor_rejects_shallow_plan(tmp_path: Path) -> 
     assert data["audits"][0]["blockers"]
 
 
+def test_deterministic_solution_auditor_rejects_scaffold_plan(tmp_path: Path) -> None:
+    plan = deep_plan()
+    plan["actions"][0]["anchor_text"] = "请根据目标章节中首次出现相关概念、图表或实验设置的位置人工确认插入点。"
+    plan["actions"][0]["original_text"] = ""
+    plan["reviewer_response"] = "感谢专家意见。本文拟针对该问题在相关章节中补充说明或调整，并对需要作者核实的内容进行逐项确认后再形成最终修改稿。"
+    plan["risks"] = ["该文件为确定性 scaffold，需 revision-planner 或作者复核后作为最终修改文本。"]
+    plans = tmp_path / "plans"
+    plans.mkdir()
+    (plans / "R1-C001.json").write_text(json.dumps(plan, ensure_ascii=False), encoding="utf-8")
+    output = tmp_path / "audit.json"
+
+    result = run_script("scripts/audit_revision_solutions.py", "--revision-plans-dir", str(plans), "--output", str(output))
+
+    assert result.returncode == 1
+    data = json.loads(output.read_text(encoding="utf-8"))
+    audit = data["audits"][0]
+    assert audit["decision"] == "revise"
+    assert "确定性 scaffold 不能作为最终深度修改方案。" in audit["blockers"]
+
+
 def test_deep_agents_and_skill_workflow_are_registered() -> None:
     planner = (ROOT / ".claude/agents/deep-revision-planner.md").read_text(encoding="utf-8")
     auditor = (ROOT / ".claude/agents/revision-solution-auditor.md").read_text(encoding="utf-8")
@@ -156,3 +176,4 @@ def test_build_report_renders_deep_revision_fields(tmp_path: Path) -> None:
     assert "#### 问题诊断" in report
     assert "#### 论文证据与定位" in report
     assert "#### 同步修改建议" in report
+    assert "#### 风险与限制" in report

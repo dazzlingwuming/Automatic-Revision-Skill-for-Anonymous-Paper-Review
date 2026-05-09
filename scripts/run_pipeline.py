@@ -17,6 +17,10 @@ def run_step(*args: str) -> None:
         raise RuntimeError(f"Command failed: {' '.join(args)}\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}")
 
 
+def run_step_allow_failure(*args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run([sys.executable, *args], cwd=ROOT, text=True, capture_output=True, check=False)
+
+
 def prepare(args: argparse.Namespace) -> None:
     if not args.paper_docx:
         raise ValueError("--paper-docx is required for prepare/full mode")
@@ -46,7 +50,9 @@ def report(args: argparse.Namespace) -> None:
     outputs_dir.mkdir(parents=True, exist_ok=True)
 
     run_step("scripts/render_revision_plan_notes.py", "--revision-plans-dir", str(revision_plans), "--output-dir", str(notes_dir))
-    run_step("scripts/audit_revision_solutions.py", "--revision-plans-dir", str(revision_plans), "--output", str(audits_dir / "revision_solution_audit.json"))
+    audit_result = run_step_allow_failure("scripts/audit_revision_solutions.py", "--revision-plans-dir", str(revision_plans), "--output", str(audits_dir / "revision_solution_audit.json"))
+    if audit_result.returncode != 0:
+        print("warning: revision solution audit did not pass; continuing to render draft outputs", file=sys.stderr)
     run_step(
         "scripts/build_report.py",
         "--review-comments",

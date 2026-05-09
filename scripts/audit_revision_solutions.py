@@ -8,6 +8,15 @@ from pathlib import Path
 
 
 GENERIC_TEXTS = ["建议补充相关说明", "建议加强论证", "建议完善模型解释", "建议统一格式", "建议增加实验"]
+SCAFFOLD_MARKERS = [
+    "该文件为确定性 scaffold",
+    "请根据目标章节中首次出现相关概念、图表或实验设置的位置人工确认插入点",
+    "原文未提供可直接引用片段",
+]
+TEMPLATE_RESPONSES = [
+    "本文拟针对该问题在",
+    "并对需要作者核实的内容进行逐项确认后再形成最终修改稿",
+]
 
 
 def _read_json(path: Path) -> dict:
@@ -27,6 +36,13 @@ def audit_plan(plan: dict) -> dict:
     multi_issues = []
     integrity_issues = []
     response_issues = []
+    scaffold_issues = []
+
+    plan_text = json.dumps(plan, ensure_ascii=False)
+    if any(marker in plan_text for marker in SCAFFOLD_MARKERS):
+        scaffold_issues.append("检测到确定性 scaffold 占位内容。")
+        blockers.append("确定性 scaffold 不能作为最终深度修改方案。")
+        required_fixes.append("使用 deep-revision-planner 基于原文章节生成真实修改卡片，替换 scaffold 占位文本。")
 
     if len(plan.get("problem_diagnosis", "").strip()) < 40:
         diagnosis_issues.append("缺少充分的问题诊断。")
@@ -52,6 +68,12 @@ def audit_plan(plan: dict) -> dict:
         if not (target.get("section_id") or target.get("asset_id")):
             action_issues.append(f"{action.get('action_id', '')} 缺少 section_id 或 asset_id。")
             blockers.append("具体修改动作缺少定位。")
+        if "请根据目标章节" in action.get("anchor_text", ""):
+            action_issues.append(f"{action.get('action_id', '')} 使用人工确认占位锚点。")
+            blockers.append("具体修改动作缺少可执行原文锚点。")
+        if not action.get("original_text", "").strip() and action.get("type") in {"insert_after_paragraph", "replace_paragraph", "rewrite_sentence"}:
+            action_issues.append(f"{action.get('action_id', '')} 缺少原文摘录。")
+            blockers.append("正文级修改缺少原文依据。")
         if any(new_text.strip("。.") == phrase for phrase in GENERIC_TEXTS):
             action_issues.append(f"{action.get('action_id', '')} 是泛泛建议。")
             blockers.append("存在泛泛建议。")
@@ -70,6 +92,9 @@ def audit_plan(plan: dict) -> dict:
     if len(response.strip()) < 40:
         response_issues.append("盲审回复过短。")
         required_fixes.append("补充可提交的盲审回复文本。")
+    if all(part in response for part in TEMPLATE_RESPONSES):
+        response_issues.append("盲审回复仍是 scaffold 模板话术。")
+        blockers.append("盲审回复不是可提交版本。")
     if "已修改" in response and not plan.get("applied_changes"):
         response_issues.append("未实际回写时不应声称已修改。")
         blockers.append("回复表述过度承诺。")
@@ -77,7 +102,7 @@ def audit_plan(plan: dict) -> dict:
     rubric = {
         "addresses_comment": _rubric_item(20 - min(20, len(diagnosis_issues) * 10), 20, diagnosis_issues),
         "uses_paper_evidence": _rubric_item(15 - min(15, len(evidence_issues) * 8), 15, evidence_issues),
-        "actionability": _rubric_item(20 - min(20, len(action_issues) * 6), 20, action_issues),
+        "actionability": _rubric_item(20 - min(20, len(action_issues) * 6 + len(scaffold_issues) * 10), 20, action_issues + scaffold_issues),
         "multi_location_coverage": _rubric_item(15 - min(15, len(multi_issues) * 8), 15, multi_issues),
         "integrity": _rubric_item(15 - min(15, len(integrity_issues) * 15), 15, integrity_issues),
         "reviewer_response": _rubric_item(15 - min(15, len(response_issues) * 8), 15, response_issues),

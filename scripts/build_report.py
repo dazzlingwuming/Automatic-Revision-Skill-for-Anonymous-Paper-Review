@@ -217,6 +217,11 @@ def build_reports(
             report_lines.extend(f"- {item['item']}：{item['needed_material']}" for item in plan["author_input_needed"])
         else:
             report_lines.append("无。")
+        report_lines.extend(["", "#### 风险与限制", ""])
+        if plan.get("risks"):
+            report_lines.extend(f"- {risk}" for risk in plan["risks"])
+        else:
+            report_lines.append("无。")
         report_lines.extend(["", "---", ""])
         response_lines.append(
             f"| {index} | {comment['original_text']} | {status} | {_location_text(first_action)} | {_reviewer_response(plan)} |"

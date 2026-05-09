@@ -77,3 +77,4 @@ def test_run_pipeline_prepare_and_report_creates_user_facing_outputs(tmp_path: P
     assert (out / "outputs" / "05_修改建议版.docx").exists()
     audit = json.loads((out / "audits" / "revision_solution_audit.json").read_text(encoding="utf-8"))
     assert "audits" in audit
+    assert audit["passed"] is False
